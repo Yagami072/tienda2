@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Flask==2.3.3
 Flask-SQLAlchemy==3.0.5
 Flask-Migrate==4.0.4
@@ -7,3 +8,14 @@ Werkzeug==2.3.7
 SQLAlchemy==2.0.20
 gunicorn==21.2.0
 psycopg2-binary==2.9.7
+=======
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Migrate==4.0.4
+python-dotenv==1.0.0
+Flask-Mail==0.9.1
+Werkzeug==2.3.7
+SQLAlchemy==2.0.20
+gunicorn==21.2.0
+psycopg2-binary==2.9.7
+>>>>>>> ce4ad8a64f2045fce86565613f7808aa8d385557
