@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Galería de imágenes -->
+        <div class="col-md-6">
+            <div class="product-gallery">
+                <div class="main-image-container">
+                    <img src="{{ url_for('static', filename='uploads/' + product.image) }}" 
+                         class="main-image" alt="{{ product.name }}">
+                    {% if product.image_hover %}
+                    <img src="{{ url_for('static', filename='uploads/' + product.image_hover) }}" 
+                         class="hover-image" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+                {% if product.additional_images %}
+                <div class="image-thumbnails mt-3">
+                    {% for image in product.additional_images.split(',') %}
+                    <div class="thumbnail">
+                        <img src="{{ url_for('static', filename='uploads/' + image.strip()) }}" 
+                             alt="Imagen adicional">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Información del producto -->
+        <div class="col-md-6">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <div class="product-price-detail">${{ "%.2f"|format(product.price) }}</div>
+            
+            <div class="product-description">
+                {{ product.description }}
+            </div>
+
+            {% if product.specifications %}
+            <div class="product-specifications mt-4">
+                <h3>Especificaciones</h3>
+                {% for spec in product.specifications.split('\n') %}
+                <div class="spec-item">{{ spec }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form class="add-to-cart-form mt-4" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                <div class="quantity-selector mb-3">
+                    <label>Cantidad:</label>
+                    <div class="input-group">
+                        <button type="button" class="btn btn-outline-secondary" onclick="decrementQuantity()">-</button>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control text-center">
+                        <button type="button" class="btn btn-outline-secondary" onclick="incrementQuantity()">+</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-cart-plus"></i> Agregar al carrito
+                </button>
+            </form>
+
+            {% if session.get('is_admin') %}
+            <div class="admin-actions mt-3">
+                <a href="{{ url_for('edit_product', id=product.id) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Editar Producto
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function incrementQuantity() {
+    const input = document.getElementById('quantity');
+    input.value = parseInt(input.value) + 1;
+}
+
+function decrementQuantity() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+</script>
+{% endblock %}

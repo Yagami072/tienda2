@@ -1,21 +1,262 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    {% for product in products %}
-    <div class="col-md-4 mb-4">
-        <div class="card">
-            <img src="{{ url_for('static', filename='uploads/' + product.image) }}" class="card-img-top" alt="{{ product.name }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">{{ product.description }}</p>
-                <p class="card-text"><strong>${{ "%.2f"|format(product.price) }}</strong></p>
-                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
-                    <button type="submit" class="btn btn-primary">Agregar al Carrito</button>
+<!-- Hero Section Mejorada -->
+<div class="main-banner">
+    <div class="banner-content">
+        <h1 class="animate__animated animate__fadeInDown">Bienvenido a Mi Tienda</h1>
+        <p class="animate__animated animate__fadeIn animate__delay-1s">Descubre productos increíbles a precios increíbles</p>
+        <div class="search-container animate__animated animate__fadeInUp animate__delay-2s">
+            <div class="hero-search-wrapper">
+                <input type="text" id="hero-search" placeholder="¿Qué estás buscando?" class="form-control">
+                <div id="hero-search-results" class="hero-search-results"></div>
+            </div>
+        </div>
+        <div class="trending-tags mt-3">
+            <span class="tag">#Ofertas</span>
+            <span class="tag">#Nuevos</span>
+            <span class="tag">#Destacados</span>
+        </div>
+    </div>
+</div>
+
+<!-- Características -->
+<section class="features-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="feature-card">
+                    <i class="fas fa-truck"></i>
+                    <h3>Envío Gratis</h3>
+                    <p>En pedidos superiores a $50</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Pago Seguro</h3>
+                    <p>100% Garantizado</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>24/7 Soporte</h3>
+                    <p>Atención personalizada</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card">
+                    <i class="fas fa-undo"></i>
+                    <h3>Devolución Fácil</h3>
+                    <p>14 días de garantía</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categorías con diseño mejorado -->
+<section class="categories-section">
+    <div class="container">
+        <h2 class="section-title">Categorías Populares</h2>
+        <div class="row">
+            {% for category in categories %}
+            {% if category.is_active %}
+            <div class="col-md-4">
+                <div class="category-card">
+                    <img src="{{ url_for('static', filename='categories/' + category.image) }}" 
+                         alt="{{ category.name }}">
+                    <div class="category-content">
+                        <h3>{{ category.name }}</h3>
+                        <p>{{ category.description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Productos con diseño mejorado -->
+<section id="productos" class="products-section">
+    <div class="container">
+        <h2 class="section-title">Nuestros Productos</h2>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="product-card">
+                    <a href="{{ url_for('product_detail', id=product.id) }}" class="product-link">
+                        <div class="product-img-container">
+                            <img src="{{ url_for('static', filename='uploads/' + product.image) }}" 
+                                 class="main-image" alt="{{ product.name }}">
+                            {% if product.image_hover %}
+                            <img src="{{ url_for('static', filename='uploads/' + product.image_hover) }}" 
+                                 class="hover-image" alt="{{ product.name }}">
+                            {% endif %}
+                            <div class="product-actions">
+                                <span class="product-action-btn">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="product-info">
+                        <a href="{{ url_for('product_detail', id=product.id) }}" class="product-title-link">
+                            <h3 class="product-title">{{ product.name }}</h3>
+                        </a>
+                        <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                        <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus"></i> Agregar al carrito
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section Mejorada -->
+<section class="newsletter-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3>¡Únete a nuestra newsletter!</h3>
+                <p>Recibe las últimas novedades y ofertas exclusivas</p>
+            </div>
+            <div class="col-md-6">
+                <form class="newsletter-form" id="newsletter-form">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Tu email" required>
+                        <button class="btn btn-primary" type="submit">Suscribirse</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-    {% endfor %}
-</div>
+</section>
+
+<!-- Botón de scroll to top -->
+<button id="scroll-top" class="scroll-top-btn">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Scroll to top functionality
+    const scrollBtn = document.getElementById('scroll-top');
+    window.onscroll = function() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            scrollBtn.style.display = "block";
+        } else {
+            scrollBtn.style.display = "none";
+        }
+    };
+    
+    scrollBtn.onclick = function() {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    // Filtrado de productos
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Aquí iría la lógica de filtrado
+        });
+    });
+
+    // Newsletter form
+    const newsletterForm = document.getElementById('newsletter-form');
+    newsletterForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = newsletterForm.querySelector('input[type="email"]').value;
+        // Aquí iría la lógica de suscripción
+        alert('¡Gracias por suscribirte!');
+    });
+
+    const forms = document.querySelectorAll('.add-to-cart-form');
+    const toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
+
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    toast.show();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    const heroSearch = document.getElementById('hero-search');
+    const heroSearchResults = document.getElementById('hero-search-results');
+
+    heroSearch.addEventListener('input', debounce(async (e) => {
+        const query = e.target.value;
+        if (query.length < 2) {
+            heroSearchResults.style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/search?q=${query}`);
+            const data = await response.json();
+            
+            if (data.length > 0) {
+                heroSearchResults.innerHTML = data.map(product => `
+                    <a href="/product/${product.id}" class="search-result-item">
+                        <div class="search-result-content">
+                            <img src="/static/uploads/${product.image}" alt="${product.name}">
+                            <div class="search-result-info">
+                                <div class="search-result-name">${product.name}</div>
+                                <div class="search-result-price">$${product.price.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+                heroSearchResults.style.display = 'block';
+            } else {
+                heroSearchResults.innerHTML = '<div class="no-results">No se encontraron productos</div>';
+                heroSearchResults.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error en la búsqueda:', error);
+        }
+    }, 300));
+
+    // Cerrar resultados al hacer clic fuera
+    document.addEventListener('click', (e) => {
+        if (!heroSearch.contains(e.target) && !heroSearchResults.contains(e.target)) {
+            heroSearchResults.style.display = 'none';
+        }
+    });
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+});
+</script>
 {% endblock %}

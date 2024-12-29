@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Mi Carrito</h2>
+    {% if cart_items %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>${{ "%.2f"|format(item.product.price) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ "%.2f"|format(item.product.price * item.quantity) }}</td>
+                    <td>
+                        <form action="{{ url_for('remove_from_cart', product_id=item.product.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td><strong>${{ "%.2f"|format(total) }}</strong></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="text-end">
+            <a href="#" class="btn btn-success">Proceder al pago</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Tu carrito está vacío</div>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Continuar comprando</a>
+    {% endif %}
+</div>
+{% endblock %}

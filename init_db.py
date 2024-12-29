@@ -1,71 +1,87 @@
-from app import app, db, User
+from app import app, db
+from models import User, Product, Category
 from werkzeug.security import generate_password_hash
 import os
-import sys
 
-def init_database():
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(base_dir, 'instance', 'tienda.db')
-    
-    print("Iniciando configuración de la base de datos...")
-    
-    # Eliminar base de datos existente
-    if os.path.exists(db_path):
-        try:
-            os.remove(db_path)
-            print("Base de datos anterior eliminada")
-        except PermissionError:
-            print("Error: Cierra todas las aplicaciones y vuelve a intentar")
-            sys.exit(1)
-
+def init_db():
     with app.app_context():
+        # Recrear todas las tablas
+        db.drop_all()
+        db.create_all()
+        
+        print("Iniciando configuración de la base de datos...")
+
+        # Crear categorías de ejemplo
+        categories = [
+            Category(
+                name='Categoría 1',
+                description='Descripción de la categoría 1',
+                image='category1.jpg',
+                order=1,
+                is_active=True
+            ),
+            Category(
+                name='Categoría 2',
+                description='Descripción de la categoría 2',
+                image='category2.jpg',
+                order=2,
+                is_active=True
+            ),
+            Category(
+                name='Categoría 3',
+                description='Descripción de la categoría 3',
+                image='category3.jpg',
+                order=3,
+                is_active=True
+            )
+        ]
+        
+        for category in categories:
+            db.session.add(category)
+
+        # Crear usuario administrador
+        admin = User(
+            username='admin',
+            email='admin@example.com',
+            password=generate_password_hash('admin123'),
+            first_name='Admin',
+            last_name='Sistema',
+            is_admin=True,
+            is_verified=True
+        )
+        
+        # Crear productos de ejemplo
+        products = [
+            Product(
+                name='Producto 1',
+                price=19.99,
+                description='Descripción del producto 1',
+                image='product1.jpg',
+                image_hover='product1-hover.jpg'
+            ),
+            Product(
+                name='Producto 2',
+                price=29.99,
+                description='Descripción del producto 2',
+                image='product2.jpg',
+                image_hover='product2-hover.jpg'
+            )
+        ]
+        
         try:
-            # Crear tablas
-            db.create_all()
-            print("Tablas creadas en la base de datos")
-
-            # Crear usuarios
-            users_to_create = [
-                {
-                    'username': 'admin',
-                    'password': 'admin123',
-                    'is_admin': True
-                },
-                {
-                    'username': 'cliente',
-                    'password': 'cliente123',
-                    'is_admin': False
-                }
-            ]
-
-            for user_data in users_to_create:
-                user = User(
-                    username=user_data['username'],
-                    password=generate_password_hash(user_data['password']),
-                    is_admin=user_data['is_admin']
-                )
-                db.session.add(user)
-                print(f"\nCreando usuario: {user_data['username']}")
-                print(f"Es administrador: {user_data['is_admin']}")
-
-            db.session.commit()
+            # Agregar admin
+            db.session.add(admin)
             
-            # Verificar la creación
-            for user_data in users_to_create:
-                user = User.query.filter_by(username=user_data['username']).first()
-                if user:
-                    print(f"\nUsuario {user_data['username']} creado exitosamente:")
-                    print(f"ID: {user.id}")
-                    print(f"Username: {user.username}")
-                    print(f"Password: {user_data['password']}")
-                    print(f"Es admin: {user.is_admin}")
-                else:
-                    print(f"\n¡Error! No se pudo crear el usuario {user_data['username']}")
-
+            # Agregar productos
+            for product in products:
+                db.session.add(product)
+            
+            db.session.commit()
+            print("Base de datos inicializada correctamente!")
+            
         except Exception as e:
-            print(f"Error: {str(e)}")
-            sys.exit(1)
+            print(f"Error: {e}")
+            db.session.rollback()
 
-if __name__ == "__main__":
-    init_database()
-    print("\n¡Configuración completada!")
+if __name__ == '__main__':
+    init_db()
